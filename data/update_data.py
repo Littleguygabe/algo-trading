@@ -18,9 +18,8 @@ if __name__ == '__main__':
     for ticker in basket:
         yf_ticker = yf.Ticker(ticker)
         data = yf_ticker.history(period='5y')
-        data.to_csv(f'historical_data/{ticker}.csv')
+        data.to_csv(f'data/historical_data/{ticker}.csv')
         logging.info(f"{ticker} data updated")
 
     logging.info("Finished Updating Historical Data")
 
-    

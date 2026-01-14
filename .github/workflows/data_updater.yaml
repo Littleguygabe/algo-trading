@@ -23,9 +23,10 @@ jobs:
           cache: 'pip'
 
       - name: Install Libraries
-        run: |
-          pip install yfinance pandas
-          python data/update_data.py
+        run: pip install yfinance pandas
+          
+      - name: Update Data
+        run: python data/update_data.py
 
       - name: Commit and Push new Data
         run: |

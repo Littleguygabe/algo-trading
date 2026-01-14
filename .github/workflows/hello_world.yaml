@@ -17,7 +17,4 @@ jobs:
       # here would install libs 
 
       - name: Run Python Script No Args
-        run: python ci_script.py
-
-      - name: Run Python Script Arg
-        run: python ci_script.py 'test_file.csv'
+        run: python scripts/backtesting_engine.py 'hedger' 'random_walk.csv'

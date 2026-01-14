@@ -1,0 +1,42 @@
+name: Weekly Data Update
+
+on:
+  schedule:
+    - cron: '0 22 * * 5'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  week-data-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Libraries
+        run: |
+          pip install yfinance pandas
+          python data/update_data.py
+
+      - name: Commit and Push new Data
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          
+          git add data/*.csv
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update weekly stock data"
+            git push
+          fi
+          echo "Finished Weekly Data Update"

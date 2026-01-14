@@ -16,5 +16,5 @@ jobs:
 
       # here would install libs 
 
-      - name: Run Python Script No Args
+      - name: Run Historical Backtesting
         run: python scripts/backtesting_engine.py 'hedger' 'random_walk.csv'

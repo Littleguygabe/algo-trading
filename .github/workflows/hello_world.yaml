@@ -4,6 +4,11 @@ on:
       - main
 
 jobs:
+  say_hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello World"
+
   run-python-script:
     runs-on: ubuntu-latest
     steps:

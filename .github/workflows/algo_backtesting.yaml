@@ -1,0 +1,30 @@
+name: Trading Engine Backtester
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  algo-backtesting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Libraries
+        run: pip install -r requirements.txt
+
+      - name: Backtest on Historical Data
+        run: python scripts/backtesting_engine.py 'not_implemented' 'data/historical_data'
+
+      - name: Backtest on Random Walk Data
+        run: python scripts/backtesting_engine.py 'not_implemented' 'data/random_walk_data'
+
+    

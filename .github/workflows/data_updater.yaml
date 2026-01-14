@@ -25,8 +25,11 @@ jobs:
       - name: Install Libraries
         run: pip install yfinance pandas
           
-      - name: Update Data
+      - name: Update Historical Data
         run: python data/update_data.py
+
+      - name: Update Random Walk Data
+        run: python data/random_walk_update.py
 
       - name: Commit and Push new Data
         run: |

@@ -1,16 +1,22 @@
 import pandas as pd
 import random
 import os
+import logging
 
 # Parameters
 num_walks = 50
 num_steps = 1000
 output_dir = 'data/random_walk_data'
 start_value = 100 # Start value for the walk
+logging.basicConfig(level=logging.INFO)
+
 
 # Create output directory if it doesn't exist
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
+
+for filename in os.listdir(output_dir):
+    os.remove(os.path.join(output_dir,filename))
 
 for i in range(num_walks):
     # Generate random walk data
@@ -29,6 +35,6 @@ for i in range(num_walks):
     file_path = os.path.join(output_dir, f'RW_{i+1}.csv')
     df.to_csv(file_path, index=False)
 
-    print(f"Saved {file_path}")
+    logging.info(f"Saved {file_path}")
 
-print(f"Generated and saved {num_walks} random walks.")
+logging.info(f"Generated and saved {num_walks} random walks.")

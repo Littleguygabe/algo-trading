@@ -1,7 +1,7 @@
 import pandas as pd
 import yfinance as yf
 import logging
-
+import os
 logging.basicConfig(level=logging.INFO)
 
 basket = [
@@ -12,14 +12,18 @@ basket = [
     'PM', 'APP', 'RTX', 'MCD', 'ABT', 'TMO', 'AMAT', 'ISRG', 'PEP', 'LRCX'
     ]
 
-if __name__ == '__main__':
-    logging.info("Updating Historical Data")
+output_dir = 'data/historical_data'
 
-    for ticker in basket:
-        yf_ticker = yf.Ticker(ticker)
-        data = yf_ticker.history(period='5y')
-        data.to_csv(f'data/historical_data/{ticker}.csv')
-        logging.info(f"{ticker} data updated")
+logging.info("Updating Historical Data")
 
-    logging.info("Finished Updating Historical Data")
+for filename in os.listdir(output_dir):
+    os.remove(os.path.join(output_dir,filename))
+
+for ticker in basket:
+    yf_ticker = yf.Ticker(ticker)
+    data = yf_ticker.history(period='5y')
+    data.to_csv(os.path.join(output_dir,f'{ticker}.csv'))
+    logging.info(f"{ticker} data updated")
+
+logging.info("Finished Updating Historical Data")
 

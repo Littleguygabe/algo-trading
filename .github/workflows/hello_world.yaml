@@ -21,5 +21,8 @@ jobs:
 
       # here would install libs 
 
-      - name: Run Python Script
+      - name: Run Python Script No Args
         run: python ci_script.py
+
+      - name: Run Python Script Arg
+        run: python ci_script.py 'test_file.csv'

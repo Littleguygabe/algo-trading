@@ -102,8 +102,19 @@ def compareHedgeStock(hedged_ticker,hedge_series,ticker_data):
     plt.show()
 
 
+def hedgeCoordinator(target_ticker,basket):
+    basket_close_data = getBasketCloseData(basket)
+    train_basket_returns,test_basket_returns = getStandardisedBasketReturns(basket_close_data,1)
+
+    hedge_position_series = generateSyntheticHedge(target_ticker,train_basket_returns,15)
+
+    
+    # compareHedgeStock(target_ticker,hedge_position_series,basket_close_data)
+
+    return hedge_position_series
+
+
 if __name__ == '__main__':
-    print("running")
     basket = [
     'NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'GOOG', 'META', 'TSLA', 'BRK-B', 'WMT',
     'LLY', 'JPM', 'V', 'ORCL', 'XOM', 'JNJ', 'MA', 'NFLX', 'PLTR', 'ABBV',
@@ -114,12 +125,6 @@ if __name__ == '__main__':
 
     target_ticker = 'NVDA'
 
-    basket_close_data = getBasketCloseData(basket)
-    train_basket_returns,test_basket_returns = getStandardisedBasketReturns(basket_close_data,1)
-
-    hedge_position_series = generateSyntheticHedge(target_ticker,train_basket_returns,15)
-
-    
-    compareHedgeStock(target_ticker,hedge_position_series,basket_close_data)
+    hedge_position_series = hedgeCoordinator(target_ticker,basket)
 
 

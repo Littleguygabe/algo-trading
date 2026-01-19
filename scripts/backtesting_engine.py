@@ -3,7 +3,13 @@ import sys
 import os
 import pandas as pd
 
+# Add the directory of this script to the Python path.
+# This allows us to import other scripts in the same directory.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 def readDataSource(data_source):
+    data_source = f'data/{data_source}'
+
     if not os.path.isdir(data_source):
         raise ValueError(f"Data source '{data_source}' is not a directory.")
 
@@ -43,15 +49,16 @@ if __name__ == '__main__':
         print("Successfully loaded data")
 
     try:
-        script_module = importlib.import_module(f'scripts.{trading_engine_name}.py')
-        if hasattr(script_module,'main'):
-            script_module.main(data)
-
+        module_name = os.path.splitext(trading_engine_name)[0]
+        script_module = importlib.import_module(module_name)
+        
+        if hasattr(script_module, 'main'):
+            target_ticker = 'NVDA'
+            return_data = script_module.main(target_ticker, data)
         else:
-            print(f"ERROR: The module '{trading_engine_name}.py' does not have a 'main()' method")
+            print(f"ERROR: The module '{trading_engine_name}' does not have a 'main()' method")
 
     except ModuleNotFoundError:
-        print(f"ERROR: module '{trading_engine_name}.py' not found")
-
+        print(f"ERROR: module '{trading_engine_name}' not found. Ensure it is in the 'scripts' directory.")
     except Exception as e:
-        print(f"ERROR: Unknown error occurred > {e}")
+        print(f"ERROR: An error occurred while running the trading engine: {e}")

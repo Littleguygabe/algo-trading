@@ -70,18 +70,29 @@ def generateSyntheticHedge(target_ticker, returns_data, n_components=15):
     return hedge_series
 
 
-def compareHedgeStock(hedged_ticker,hedge_dataframe,ticker_return_data):
+def compareHedgeStock(hedged_ticker,hedge_dataframe,ticker_return_data,plot_data = False):
     returns_values = ticker_return_data.drop(columns=[hedged_ticker]).values
     weights_values = hedge_dataframe.values
 
     synthetic_returns = (returns_values*weights_values).sum(axis=1)
 
-    real_returns = ticker_return_data[target_ticker].values
+    real_returns = ticker_return_data[hedged_ticker].values
 
-    plt.plot(real_returns,label='real',alpha=0.5)
-    plt.plot(synthetic_returns,label='synthetic',alpha=0.5)
-    plt.legend()
-    plt.show()
+    #calculate the R2 score of the synthetic portfolio
+    real_returns_average = np.average(real_returns)
+
+    tss = ((real_returns - real_returns_average)**2).sum()
+    rss = ((real_returns-synthetic_returns)**2).sum()
+    
+    r2 = 1 - (rss/tss)
+    print(f'R2 Score > {r2}')
+
+    if plot_data:
+        plt.plot(real_returns,label='real',alpha=0.5)
+        plt.plot(synthetic_returns,label='synthetic',alpha=0.5)
+        plt.legend()
+        plt.show()
+
 
 
 
@@ -95,8 +106,8 @@ def main(target_ticker,basket_data):
     portfolio_evolution_df = pd.DataFrame()
 
     # A rolling window of 126 days (approx 6 months) is used to calculate the hedge.
-    rolling_window = 126
-    n_components = 25
+    rolling_window = 63
+    n_components = 4
 
     if len(basket_returns) > rolling_window: 
         hedge_positions = []
@@ -105,16 +116,19 @@ def main(target_ticker,basket_data):
 
         for i in range(len(basket_returns) - rolling_window):
             current_data_window = basket_returns.iloc[i:i+rolling_window]
-            hedge_position_series = generateSyntheticHedge(target_ticker, current_data_window, n_components)
+            hedge_position_series = generateSyntheticHedge(target_ticker, current_data_window, min(n_components,rolling_window))
             hedge_positions.append(hedge_position_series)
 
         portfolio_evolution_df = pd.concat(hedge_positions, axis=1).T
         portfolio_evolution_df.index = hedge_dates
 
+
         compareHedgeStock(target_ticker,portfolio_evolution_df,basket_returns[rolling_window:])
-        
+
+
+
     else:
-        hedge_position_series = generateSyntheticHedge(target_ticker, basket_returns, n_components)
+        hedge_position_series = generateSyntheticHedge(target_ticker, basket_returns, min(j,rolling_window))
         portfolio_evolution_df = pd.DataFrame(hedge_position_series).T
         if not basket_returns.empty:
             portfolio_evolution_df.index = [basket_returns.index[-1]]

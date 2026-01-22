@@ -1,3 +1,4 @@
+from portfolio import Portoflio
 import importlib
 import sys
 import os
@@ -52,9 +53,11 @@ if __name__ == '__main__':
         module_name = os.path.splitext(trading_engine_name)[0]
         script_module = importlib.import_module(module_name)
         
+        testing_portfolio = Portoflio(10000)
+
         if hasattr(script_module, 'main'):
             target_ticker = 'NVDA'
-            return_data = script_module.main(target_ticker, data)
+            return_data = script_module.main(data,testing_portfolio)
         else:
             print(f"ERROR: The module '{trading_engine_name}' does not have a 'main()' method")
 

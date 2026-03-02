@@ -65,9 +65,6 @@ class Portfolio:
     def openStrategy(self,primary_ticker,date,position_size,hedge_weights,market_values):
         #Create a position from a primary ticker, position size and hedge weights
 
-        leverage = 50
-        position_size = position_size*leverage
-
         if primary_ticker in self.strategy_book: #already have a position open for the primary ticker 
             return
 
@@ -85,7 +82,7 @@ class Portfolio:
             self.executePurchase(date,hedge_ticker,hedge_position_value,'HEDGE',market_values[hedge_ticker]) 
 
     def checkPositionsToClose(self,z_score_dict,market_values,current_date):
-        z_score_risk_threshold = 0.15
+        z_score_risk_threshold = 0.5
         
         tickers_to_unwind = []
         for ticker in self.strategy_book:

@@ -1,4 +1,4 @@
-from portfolio import Portoflio
+from portfolio import portfolio
 import importlib
 import sys
 import os
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         module_name = os.path.splitext(trading_engine_name)[0]
         script_module = importlib.import_module(module_name)
         
-        testing_portfolio = Portoflio(10000)
+        testing_portfolio = portfolio(10000)
 
         if hasattr(script_module, 'main'):
             target_ticker = 'NVDA'

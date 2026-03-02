@@ -46,7 +46,7 @@ def generateExecutePositionPurchase(active_portfolio,entry_points,returns_data,c
                                     max_gross_leverage = 2 #max leverage size across this block of trades
                                     ):
 
-    variance_rolling_window_size = 30
+    variance_rolling_window_size = 50
     current_date = returns_data.index[-1]
 
     latest_close_data = close_data.iloc[-1]
@@ -62,13 +62,15 @@ def generateExecutePositionPurchase(active_portfolio,entry_points,returns_data,c
         entry_points = entry_points[:target_capacity]
 
 
-    current_holdings = len(active_portfolio.active_positions)
+    current_holdings = len(active_portfolio.strategy_book)
     spare_capacity = target_capacity - current_holdings
 
     if spare_capacity <= 0:
+        print('Not enough capacity for holding positions')
         entry_points = []
 
     elif len(entry_points) > spare_capacity:
+        print('Cropping entry points')
         entry_points = entry_points[:spare_capacity]
 
     entry_points_dict = {}
@@ -77,15 +79,19 @@ def generateExecutePositionPurchase(active_portfolio,entry_points,returns_data,c
 
 
     ## section for calculating position size
+    current_equity = active_portfolio.capital
+    if not active_portfolio.portfolio_val_evolution.empty:
+        current_equity = active_portfolio.portfolio_val_evolution['Total_equity'].iloc[-1]
+
     most_recent_vols = vol_df[list(entry_points_dict.keys())].iloc[-1]
-    daily_capital_risk_value = active_portfolio.capital*daily_volatility_target
+    daily_capital_risk_value = current_equity*daily_volatility_target
     risk_value_per_trade = daily_capital_risk_value/np.sqrt(target_capacity) #design the system to make 25 trades on any given day
     max_leverage_per_trade = max_gross_leverage/target_capacity
 
     # volatility based position sizing - volatility targeting
     for ticker,vol in most_recent_vols.items():
         ideal_position_size = risk_value_per_trade/vol
-        max_size_value = active_portfolio.capital*max_leverage_per_trade
+        max_size_value = current_equity*max_leverage_per_trade
         actual_position_size = min(ideal_position_size,max_size_value)
 
         z_score = entry_points_dict[ticker][0]
@@ -98,7 +104,7 @@ def main(basket_data,portfolio):
     universe = close_data.columns.values
 
     returns_data = getLogReturnsDataFromClose(close_data)
-    rolling_window_size = 63 #roughly 1 quarter
+    rolling_window_size = 22 #roughly 1 quarter
 
     entry_points = []
 
@@ -134,7 +140,6 @@ def main(basket_data,portfolio):
 
         if abs(z_score)>=2:
             entry_points.append((ticker,z_score,replicating_portfolio))
-
 
     portfolio.checkPositionsToClose(daily_z_scores,close_data.iloc[-1],close_data.index[-1])
 

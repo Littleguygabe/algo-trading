@@ -1,6 +1,6 @@
 import datetime
 import yfinance as yf
-import walk_forward_pca as wf_pca
+import stat_arb as stat_arb
 from portfolio import Portfolio
 from tqdm import tqdm
 
@@ -9,7 +9,7 @@ def getBasketData(basket):
     start_date = datetime.date.today() - datetime.timedelta(1464)
     end_date = yesterday
 
-    basket_data = yf.download(basket,start=start_date,end=end_date)
+    basket_data = yf.download(basket,start=start_date,end=end_date,auto_adjust=True)
     return basket_data
 
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     testing_portfolio = Portfolio(100000)
     for i in tqdm(range(window_size,len(basket_data)),desc='Backtesting...'):
         data_window = basket_data.iloc[i-window_size:i]
-        wf_pca.main(data_window,testing_portfolio)
+        stat_arb.main(data_window,testing_portfolio)
 
     testing_portfolio.printValueHistory()
     testing_portfolio.printTransactionHistory()

@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import os
 import logging
+from datetime import datetime
 
 # Parameters
 num_walks = 50
@@ -16,7 +17,12 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 for filename in os.listdir(output_dir):
-    os.remove(os.path.join(output_dir,filename))
+    file_path = os.path.join(output_dir, filename)
+    if os.path.isfile(file_path):
+        os.remove(file_path)
+
+# Generate a range of business days ending today
+dates = pd.date_range(end=datetime.now(), periods=num_steps, freq='B')
 
 for i in range(num_walks):
     # Generate random walk data
@@ -29,7 +35,10 @@ for i in range(num_walks):
         steps.append(current_value)
 
     # Create a DataFrame
-    df = pd.DataFrame({'Close': steps})
+    df = pd.DataFrame({
+        'Date': dates,
+        'Close': steps
+    })
 
     # Save to CSV
     file_path = os.path.join(output_dir, f'RW_{i+1}.csv')
@@ -37,4 +46,4 @@ for i in range(num_walks):
 
     logging.info(f"Saved {file_path}")
 
-logging.info(f"Generated and saved {num_walks} random walks.")
+logging.info(f"Generated and saved {num_walks} random walks with synthetic dates.")

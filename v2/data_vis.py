@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
     # Read the optimization results from CSV
-    df = pd.read_csv('output.csv')
+    df = pd.read_csv('./v2/output.csv')
     
     # Clean data: Replace any infinite Sharpe Ratios (common in backtesting errors) with 0
     df['sharpe_ratio'] = df['sharpe_ratio'].replace([np.inf, -np.inf], 0)

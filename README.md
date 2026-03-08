@@ -27,7 +27,7 @@ The strategy was backtested using `vectorbt` on a basket of 10 major technology 
 ### Optimization Surface
 The following heatmap (from `v2/Figure_1.png`) illustrates the sensitivity of the Sharpe Ratio to the PCA window size and entry Z-threshold:
 
-![Strategy Optimization Surface](./Figure_1.png)
+![Strategy Optimization Surface](./v2/Figure_1.png)
 
 ## How to Run
 

@@ -58,11 +58,13 @@ class HyperParameterTuner:
 
         self.res = self.PCAstrategy.run(
             self.data_loader.get_data(),
-            window_size=np.arange(350, 451, 2).tolist(), 
+            window_size=np.arange(300, 501, 2).tolist(), 
             # n_components=np.arange(3, 13, 1).tolist(), 
             n_components=[7], 
             z_threshold=np.around(np.arange(2.0, 3.1, 0.05), 2).tolist(),
-            exit_threshold=np.around(np.arange(-1.0,1.0,0.05), 2).tolist(),
+            # exit_threshold=np.around(np.arange(-1.0,1.0,0.05), 2).tolist(),
+            exit_threshold=[0.25],
+
             param_product=True,
             show_progress=True
         )
@@ -91,28 +93,40 @@ class HyperParameterTuner:
         valid_mask = trade_counts >= min_trades
         sharpes = sharpes[valid_mask]
 
+        if sharpes.empty:
+            print(f"No strategies met the minimum trade requirement of {min_trades} trades.")
+            return
 
         best_params = sharpes.idxmax()
         print(f"Top Params: {best_params}")
 
         print("\n--- Top 5 by Sharpe ---")
         print(sharpes.sort_values(ascending=False).head(5))
-        winner_stats = self.portfolio.xs(best_params, level=(0, 1, 2)).stats()
+        
+        # Access the best portfolio directly using the full parameter tuple
+        winner_stats = self.portfolio[best_params].stats()
 
         print("\n--- Full Stats for Winner ---")
         print(tabulate(winner_stats.to_frame(), headers='keys', tablefmt='fancy_grid'))
 
     def display_hyper_tuning_results(self):
-        sharpes = pd.DataFrame(self.portfolio.sharpe_ratio())
-        # Convert the multi-indexed result into a flat DataFrame
-        df_flat = sharpes.reset_index()
+        sharpe_series = self.portfolio.sharpe_ratio()
+        if sharpe_series.empty:
+            print("No data to display.")
+            return
+
+        # Ensure the series has a name for reset_index to use
+        sharpe_series.name = 'sharpe_ratio'
+        df_flat = sharpe_series.reset_index()
         
         df_flat.to_csv('output.csv')
 
-        pivot_df = df_flat.pivot(
+        # Use pivot_table to handle cases where other parameters might cause duplicates
+        pivot_df = df_flat.pivot_table(
             index='pca_strat_window_size', 
             columns='pca_strat_z_threshold', 
-            values='sharpe_ratio'
+            values='sharpe_ratio',
+            aggfunc='first'
         )
 
         X, Y = np.meshgrid(pivot_df.columns, pivot_df.index)

@@ -1,6 +1,10 @@
-# PCA Statistical Arbitrage Strategy (v2)
+# Hyper-Parameter Tuned PCA Statistical Arbitrage Strategy (v2)
 
-**What it is:** A mean-reversion statistical arbitrage strategy on a basket of technology equities using Principal Component Analysis (PCA) to isolate idiosyncratic alpha from common market factors.
+**What it is:** A mean-reversion statistical arbitrage strategy on a basket of technology equities using Principal Component Analysis (PCA) to isolate idiosyncratic alpha from common market factors. With paralellised backtesting implement to optimise PCA hyper-parameters such as:
+
+- Z-score entry and exit threshold
+- number of principle components
+- PCA window size used
 
 ## Methodology
 
